@@ -328,6 +328,15 @@ examples/
 | smoke test 與參考值差距 | 0（位元相同） |
 | 重跑（已安裝、無 `--force`） | 立即跳過，不重建 |
 
+`--slurm` 路徑也實測過（job 1085605，`development` partition，`icpnp322`）：
+
+| 量測項目 | 結果 |
+| --- | --- |
+| 送出到完成的總 wall time（含排隊） | 3 分 34 秒 |
+| 其中編譯（獨佔計算節點，`-j32`） | **2 分 34 秒**（login node 上同樣參數為 6 分 24 秒） |
+| smoke test 啟動方式 | 自動改用 `srun`（偵測到 `SLURM_JOB_ID`） |
+| 作業失敗時 | `sbatch --wait` 會把 exit code 傳回給呼叫者 |
+
 ---
 
 ## 疑難排解
