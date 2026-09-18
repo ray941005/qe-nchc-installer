@@ -137,6 +137,23 @@ publish_modulefile() {
   local src=$QE_PREFIX/share/quantum-espresso/modulefile/${QE_VERSION}-${QE_TOOLCHAIN_ID}.lua
   QE_MODULEFILE=$QE_MODULEFILE_DIR/quantum-espresso/${QE_VERSION}-${QE_TOOLCHAIN_ID}.lua
   mkdir -p "$(dirname "$QE_MODULEFILE")"
+
+  # Two installs of the same version and toolchain into different prefixes map
+  # to the same module name. Repointing an existing module is a legitimate
+  # thing to want, but doing it silently would mean `module load` quietly
+  # starts resolving to a different set of binaries. Say so.
+  if [[ -f $QE_MODULEFILE ]]; then
+    local old_root
+    old_root=$(sed -n 's|^local root = "\(.*\)"$|\1|p' "$QE_MODULEFILE" | head -n 1)
+    if [[ -n $old_root && $old_root != "$QE_PREFIX" ]]; then
+      log_warn "module quantum-espresso/${QE_VERSION}-${QE_TOOLCHAIN_ID} already exists and points to"
+      log_warn "    ${old_root}"
+      log_warn "repointing it to"
+      log_warn "    ${QE_PREFIX}"
+      log_warn "use --modulefile-dir to keep the two installations separately loadable"
+    fi
+  fi
+
   cp "$src" "$QE_MODULEFILE"
   log_ok "modulefile published: ${QE_MODULEFILE}"
 }

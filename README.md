@@ -94,6 +94,11 @@ MKL，**執行時期**同樣需要這個模組，不是只有編譯時要。
 
 實際的 Slurm 作業範例見 [`examples/pw-scf.sbatch`](examples/pw-scf.sbatch)。
 
+> 同一個版本＋工具鏈組合，對應的 module 名稱是固定的
+> （`quantum-espresso/7.6-intel-2024.0`）。如果你把同一個版本裝到兩個不同的
+> prefix，第二次安裝會把這個 module 改指到新的位置，並印出明確的 WARN 說明
+> 舊位置與新位置。要讓兩份安裝同時可載入，請用 `--modulefile-dir` 分開。
+
 ---
 
 ## 命令列選項

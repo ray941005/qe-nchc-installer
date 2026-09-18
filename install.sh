@@ -341,6 +341,10 @@ main() {
   if (( QE_FORCE == 0 )) && already_installed; then
     log_ok "already installed and up to date: ${QE_PREFIX}"
     log_info "pass --force to rebuild from scratch"
+    # Still (re)publish the modulefile: it lives outside the prefix, so it can
+    # have been removed or repointed by another install since. Re-running the
+    # installer should leave the environment consistent, not merely skip.
+    publish_modulefile
     print_summary
     exit 0
   fi
