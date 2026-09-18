@@ -5,7 +5,7 @@
 不使用 container，不使用 Spack，不需要 root 權限。
 
 ```bash
-git clone https://github.com/OWNER/qe-nchc-installer.git
+git clone https://github.com/ray941005/qe-nchc-installer.git
 ./qe-nchc-installer/install.sh
 ```
 
@@ -21,6 +21,7 @@ git clone https://github.com/OWNER/qe-nchc-installer.git
 - [可復現性是怎麼做到的](#可復現性是怎麼做到的)
 - [設計決策與理由](#設計決策與理由)
 - [Repo 結構](#repo-結構)
+- [實測紀錄](#實測紀錄)
 - [疑難排解](#疑難排解)
 - [移植到其他叢集](#移植到其他叢集)
 - [已知限制](#已知限制)
@@ -32,7 +33,7 @@ git clone https://github.com/OWNER/qe-nchc-installer.git
 ### 最短路徑
 
 ```bash
-git clone https://github.com/OWNER/qe-nchc-installer.git
+git clone https://github.com/ray941005/qe-nchc-installer.git
 ./qe-nchc-installer/install.sh
 ```
 
@@ -283,6 +284,44 @@ tests/smoke/
 examples/
   pw-scf.sbatch                生產環境作業腳本範例
 ```
+
+---
+
+## 實測紀錄
+
+以下是在 `ilgn02` 上的實際執行結果（可用 `install.sh --force` 重現）：
+
+```
+=== Preflight ===
+[16:59:58] OK    preflight passed
+[16:59:59] INFO  loading module intel/2024_01_46
+[16:59:59] OK    toolchain ready (MKLROOT=/pkg/compiler/intel/2024/mkl/2024.0, ...)
+=== Fetch source ===
+[16:59:59] OK    source verified at 9f93ddec427d2b9a45bb72d828c6d324f62fcabd
+[16:59:59] OK    submodules pinned:   (8 個，全部符合記錄的 revision)
+=== Configure ===
+[17:00:08] OK    configured (mpiifort -> ifort (IFORT) 2021.11.1 20231117)
+=== Compile ===
+[17:06:32] OK    compiled in 6m 24s
+=== Install ===
+[17:06:35] OK    staged 107 executables in .../7.6-intel-2024.0.stage.1266024
+=== Smoke test ===
+[17:06:36] OK    SCF total energy -15.84452726 Ry (reference -15.84452726 Ry, Δ=0.000e+00 Ry)
+[17:06:37] OK    installed to /home/rayo5o05/opt/quantum-espresso/7.6-intel-2024.0
+[17:06:37] OK    modulefile published: .../opt/modulefiles/quantum-espresso/7.6-intel-2024.0.lua
+=== Done ===
+```
+
+| 量測項目 | 結果 |
+| --- | --- |
+| 全新安裝總時間（`-j32`，含 clone、submodule、編譯、測試） | **7 分 38 秒** |
+| 其中編譯 | 6 分 24 秒 |
+| shallow clone QE 原始碼 | 約 7 秒 |
+| 初始化 8 個 submodule | 約 50 秒 |
+| 產生的執行檔數量 | 107 |
+| 安裝樹大小 | 1.2 GiB |
+| smoke test 與參考值差距 | 0（位元相同） |
+| 重跑（已安裝、無 `--force`） | 立即跳過，不重建 |
 
 ---
 
