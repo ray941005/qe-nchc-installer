@@ -1,0 +1,28 @@
+#!/bin/sh
+# Quantum ESPRESSO @QE_VERSION@ environment (@TOOLCHAIN_ID@)
+#
+# GENERATED FILE — produced by the QE installer, do not edit.
+# Usage:  . @PREFIX@/etc/qe-env.sh
+
+if ! command -v module >/dev/null 2>&1; then
+    if [ -r /usr/share/lmod/lmod/init/sh ]; then
+        . /usr/share/lmod/lmod/init/sh
+    fi
+fi
+
+# QE links against Intel MPI and MKL shared libraries, so the exact same
+# toolchain module that built it must be present at run time.
+module load @TOOLCHAIN_MODULES@ >/dev/null 2>&1
+
+QE_ROOT="@PREFIX@"
+export QE_ROOT
+PATH="${QE_ROOT}/bin:${PATH}"
+export PATH
+if [ -d "${QE_ROOT}/lib" ]; then
+    LD_LIBRARY_PATH="${QE_ROOT}/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+    export LD_LIBRARY_PATH
+fi
+
+# Where pw.x looks for pseudopotentials unless an input file overrides it.
+: "${ESPRESSO_PSEUDO:=${HOME}/pseudo}"
+export ESPRESSO_PSEUDO

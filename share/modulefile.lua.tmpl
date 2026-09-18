@@ -1,0 +1,40 @@
+-- -*- lua -*-
+-- Quantum ESPRESSO @QE_VERSION@ (@TOOLCHAIN_ID@)
+--
+-- GENERATED FILE — produced by the QE installer, do not edit.
+
+local root = "@PREFIX@"
+
+whatis("Name        : Quantum ESPRESSO")
+whatis("Version     : @QE_VERSION@")
+whatis("Toolchain   : @TOOLCHAIN_ID@ (MPI + OpenMP + ScaLAPACK/MKL)")
+whatis("Category    : Application/Chemistry")
+whatis("URL         : https://www.quantum-espresso.org/")
+whatis("Built       : @BUILD_DATE@ from git @QE_GIT_COMMIT@")
+
+help([[
+Quantum ESPRESSO @QE_VERSION@, built from source at git commit
+@QE_GIT_COMMIT@ with @TOOLCHAIN_ID@ (MPI + OpenMP + ScaLAPACK via MKL).
+
+Loading this module puts pw.x, ph.x, cp.x, pp.x ... on your PATH and pulls in
+the exact toolchain module the binaries were linked against.
+
+Build provenance: @PREFIX@/share/quantum-espresso/manifest.json
+]])
+
+-- The binaries link Intel MPI and MKL shared libraries: the toolchain is a
+-- hard runtime dependency, not just a build-time one.
+depends_on("@TOOLCHAIN_MODULES@")
+
+prepend_path("PATH", pathJoin(root, "bin"))
+for _, libdir in ipairs({"lib", "lib64"}) do
+    if isDir(pathJoin(root, libdir)) then
+        prepend_path("LD_LIBRARY_PATH", pathJoin(root, libdir))
+    end
+end
+setenv("QE_ROOT", root)
+
+-- Matches the naming used by the site-provided chemistry modules, so loading
+-- two different Quantum ESPRESSO builds at once is refused rather than
+-- silently producing a mixed PATH.
+family("chem")

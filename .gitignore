@@ -1,0 +1,5 @@
+# Nothing from a build should ever land in the repo.
+*.log
+*.swp
+.DS_Store
+build/

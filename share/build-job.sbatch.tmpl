@@ -1,0 +1,17 @@
+#!/bin/bash
+#SBATCH --job-name=qe-build
+#SBATCH --account=@ACCOUNT@
+#SBATCH --partition=@PARTITION@
+#SBATCH --time=@TIME@
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=@CPUS@
+#SBATCH --output=@LOGFILE@
+#
+# GENERATED FILE — produced by install.sh --slurm, do not edit.
+# It simply re-runs the installer inside the allocation.
+
+set -o errexit -o nounset -o pipefail
+
+echo "qe-build job ${SLURM_JOB_ID} on $(hostname), ${SLURM_CPUS_PER_TASK} cpus"
+exec @INSTALLER@ @ARGS@
