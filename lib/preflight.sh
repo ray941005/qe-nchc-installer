@@ -41,9 +41,8 @@ preflight() {
   require_free_space "$QE_BUILD_ROOT" 8192
   require_free_space "$parent" 3072
 
-  # Only require network access if we actually have to fetch something: a
-  # re-run against an already-cloned, already-verified source tree works
-  # offline.
+  # Only require network access if there is something to fetch, so a re-run
+  # against an already-verified source tree works offline.
   local have_source=0
   if [[ -d $QE_SRC_DIR/.git ]] &&
      [[ $(git -C "$QE_SRC_DIR" rev-parse HEAD 2>/dev/null) == "$QE_GIT_COMMIT" ]]; then

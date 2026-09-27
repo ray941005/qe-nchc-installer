@@ -1,9 +1,6 @@
-! Bulk silicon, self-consistent field calculation.
-!
-! The smallest calculation that still exercises the whole stack: FFTs (MKL
-! FFTW3 interface), dense linear algebra (MKL), plane-wave/k-point
-! distribution (MPI) and stress/force evaluation. Runs in a few seconds on
-! two ranks, and its total energy is a stable, well-known number.
+! Bulk silicon SCF. Small enough to run in a few seconds on two ranks, but
+! still exercises FFTs, dense linear algebra, k-point distribution over MPI
+! and stress/force evaluation.
 &CONTROL
     calculation  = 'scf'
     prefix       = 'si'

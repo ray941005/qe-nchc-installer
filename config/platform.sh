@@ -15,26 +15,22 @@ QE_LMOD_INIT_CANDIDATES=(
   "${LMOD_PKG:-/nonexistent}/init/bash"
 )
 
-# Fingerprint used by preflight to confirm we really are on this platform.
-# Deliberately a path, not a hostname: login nodes get renamed, install trees
-# do not.
+# Fingerprint used by preflight to confirm the platform. A path, not a
+# hostname: login nodes get renamed, install trees do not.
 QE_PLATFORM_FINGERPRINT="/pkg/compiler/intel/2024"
 
-# The toolchain, pinned to an exact module version. Intel oneAPI 2024.0 ships
-# the compilers, Intel MPI 2021.11 and MKL 2024.0 (which provides BLAS, LAPACK,
-# ScaLAPACK, BLACS and the FFTW3 interface) in a single module, so this is the
-# whole dependency set: no third-party numerical library has to be built.
+# The toolchain, pinned to an exact module version. oneAPI 2024.0 ships the
+# compilers, Intel MPI 2021.11 and MKL 2024.0 (BLAS, LAPACK, ScaLAPACK, BLACS
+# and the FFTW3 interface) in one module, so this is the whole dependency set.
 QE_TOOLCHAIN_MODULES=("intel/2024_01_46")
 QE_TOOLCHAIN_ID="intel-2024.0"
 
-# Sapphire Rapids is the only x86 CPU in this cluster's compute and login
-# nodes, so targeting AVX-512 unconditionally is safe here. Override with
-# --arch-flags if that ever stops being true.
+# Sapphire Rapids is the only x86 CPU in this cluster, so AVX-512 is always
+# available. Override with --arch-flags if that changes.
 QE_ARCH_FLAGS_DEFAULT="-xCORE-AVX512"
 
-# C compiler wrapper. oneAPI 2024.0 dropped the classic `icc`, so the LLVM
-# based `icx` (via mpiicx) is the only option and is used for both Fortran
-# variants; QE's C code is a thin layer and is not performance critical.
+# C compiler wrapper. oneAPI 2024.0 dropped the classic `icc`, so `icx` (via
+# mpiicx) is the only option, and is used with either Fortran compiler.
 QE_MPICC_WRAPPER="mpiicx"
 
 # Fortran compiler wrappers, selected by --compiler.

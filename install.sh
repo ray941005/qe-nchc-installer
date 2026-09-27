@@ -6,8 +6,8 @@
 #   ./<repo>/install.sh
 #
 # Runs from any directory, as any user, without root, containers or Spack.
-# Everything it needs is pinned: the source commit, the submodule revisions and
-# the exact toolchain module. See README.md for the design notes.
+# The source commit, the submodule revisions and the toolchain module are all
+# pinned. See README.md.
 
 set -o errexit -o nounset -o pipefail -o errtrace
 shopt -s inherit_errexit 2>/dev/null || true
@@ -271,8 +271,7 @@ submit_slurm_build() {
   log_info "job script: ${job_script}"
   log_info "waiting for the job to finish (Ctrl-C leaves it running; use scancel to stop it)"
 
-  # --wait makes this still feel like one synchronous command and propagates
-  # the job's exit status.
+  # --wait keeps this one synchronous command and passes the exit status back.
   sbatch --wait "$job_script"
 }
 
@@ -341,9 +340,8 @@ main() {
   if (( QE_FORCE == 0 )) && already_installed; then
     log_ok "already installed and up to date: ${QE_PREFIX}"
     log_info "pass --force to rebuild from scratch"
-    # Still (re)publish the modulefile: it lives outside the prefix, so it can
-    # have been removed or repointed by another install since. Re-running the
-    # installer should leave the environment consistent, not merely skip.
+    # The modulefile lives outside the prefix, so another install may have
+    # removed or repointed it since. Republish rather than just skipping.
     publish_modulefile
     print_summary
     exit 0

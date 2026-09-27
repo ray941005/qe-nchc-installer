@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
-# lib/selftest.sh — prove the installed binaries actually work.
+# lib/selftest.sh — run a real calculation and check the number it produces.
 #
-# "It compiled" is not the same as "it runs". The smoke test runs a real SCF
-# calculation under MPI and checks the total energy against a known value, so
-# a build that links but produces garbage (wrong BLAS, broken MPI, bad
-# optimisation flags) is caught here rather than by a user three weeks later.
+# Catches a build that links but computes the wrong answer: BLAS wired up
+# wrong, broken FFT, over-aggressive optimisation flags.
 
-# Run in the staging tree so that a failed test never gets promoted to $PREFIX.
+# Runs against the staging tree, so a failed test is never promoted to $PREFIX.
 selftest_smoke() {
   log_phase "Smoke test"
 

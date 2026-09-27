@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-# lib/postinstall.sh — make the installed tree usable and self-describing.
+# lib/postinstall.sh — environment script, modulefile and provenance manifest.
 #
-# Everything here writes into the *staging* directory, so the finished tree
-# that gets swapped into place already contains its own environment script,
-# modulefile and provenance manifest.
+# Writes into the staging directory, so the tree that gets swapped into place
+# already carries all three.
 
 # render_template <template> <destination> — substitute @TOKEN@ placeholders.
 render_template() {
@@ -127,21 +126,17 @@ postinstall() {
   log_ok "post-install complete"
 }
 
-# Copy the generated modulefile to a stable, prefix-independent location so
-# that `module use` only ever needs one directory.
-#
-# Deliberately called only after the install has been committed: publishing it
-# earlier would leave a modulefile pointing at a prefix that does not exist if
-# the self-test then fails.
+# Copy the modulefile somewhere prefix-independent, so `module use` only ever
+# needs one directory. Called after the install is committed: published
+# earlier, a failed self-test would leave it pointing at a missing prefix.
 publish_modulefile() {
   local src=$QE_PREFIX/share/quantum-espresso/modulefile/${QE_VERSION}-${QE_TOOLCHAIN_ID}.lua
   QE_MODULEFILE=$QE_MODULEFILE_DIR/quantum-espresso/${QE_VERSION}-${QE_TOOLCHAIN_ID}.lua
   mkdir -p "$(dirname "$QE_MODULEFILE")"
 
-  # Two installs of the same version and toolchain into different prefixes map
-  # to the same module name. Repointing an existing module is a legitimate
-  # thing to want, but doing it silently would mean `module load` quietly
-  # starts resolving to a different set of binaries. Say so.
+  # Two prefixes with the same version and toolchain map to the same module
+  # name. Repointing is fine, but doing it silently would make `module load`
+  # resolve to different binaries without warning.
   if [[ -f $QE_MODULEFILE ]]; then
     local old_root
     old_root=$(sed -n 's|^local root = "\(.*\)"$|\1|p' "$QE_MODULEFILE" | head -n 1)

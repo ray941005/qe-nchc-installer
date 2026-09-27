@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
-# lib/source.sh — obtain exactly the sources we pinned, and prove it.
+# lib/source.sh — fetch the pinned sources and verify them.
 #
-# Why git and not the release tarball: GitLab's generated source archives do
-# not contain the git submodules under external/ (devxlib, fox, mbd, lapack,
-# wannier90, ...), and their checksums are not guaranteed stable over time.
-# A tag plus a commit hash is content-addressed and verifiable forever, and
-# the submodule pointers recorded in the tree pin the dependencies too.
+# git rather than the release tarball: GitLab's generated archives leave the
+# external/ submodules empty, and their checksums are not stable over time.
 
 fetch_source() {
   log_phase "Fetch source"

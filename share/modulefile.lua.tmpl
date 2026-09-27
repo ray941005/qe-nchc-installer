@@ -13,17 +13,17 @@ whatis("URL         : https://www.quantum-espresso.org/")
 whatis("Built       : @BUILD_DATE@ from git @QE_GIT_COMMIT@")
 
 help([[
-Quantum ESPRESSO @QE_VERSION@, built from source at git commit
-@QE_GIT_COMMIT@ with @TOOLCHAIN_ID@ (MPI + OpenMP + ScaLAPACK via MKL).
+Quantum ESPRESSO @QE_VERSION@, built from git @QE_GIT_COMMIT@ with
+@TOOLCHAIN_ID@ (MPI + OpenMP + ScaLAPACK via MKL).
 
-Loading this module puts pw.x, ph.x, cp.x, pp.x ... on your PATH and pulls in
-the exact toolchain module the binaries were linked against.
+Puts pw.x, ph.x, cp.x, pp.x ... on your PATH and loads the toolchain module
+the binaries were linked against.
 
 Build provenance: @PREFIX@/share/quantum-espresso/manifest.json
 ]])
 
--- The binaries link Intel MPI and MKL shared libraries: the toolchain is a
--- hard runtime dependency, not just a build-time one.
+-- The binaries dynamically link Intel MPI and MKL, so the toolchain is a
+-- runtime dependency too.
 depends_on("@TOOLCHAIN_MODULES@")
 
 prepend_path("PATH", pathJoin(root, "bin"))
@@ -34,7 +34,6 @@ for _, libdir in ipairs({"lib", "lib64"}) do
 end
 setenv("QE_ROOT", root)
 
--- Matches the naming used by the site-provided chemistry modules, so loading
--- two different Quantum ESPRESSO builds at once is refused rather than
--- silently producing a mixed PATH.
+-- Same family as the site chemistry modules, so loading two Quantum ESPRESSO
+-- builds at once is refused instead of producing a mixed PATH.
 family("chem")

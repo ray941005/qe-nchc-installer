@@ -10,8 +10,8 @@ if ! command -v module >/dev/null 2>&1; then
     fi
 fi
 
-# QE links against Intel MPI and MKL shared libraries, so the exact same
-# toolchain module that built it must be present at run time.
+# QE dynamically links Intel MPI and MKL, so the module that built it has to
+# be loaded at run time too.
 module load @TOOLCHAIN_MODULES@ >/dev/null 2>&1
 
 QE_ROOT="@PREFIX@"

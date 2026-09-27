@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # lib/build.sh — configure, compile and install Quantum ESPRESSO.
 
-# The full CMake command line, kept in an array so it can be logged verbatim
-# and replayed by hand.
+# Kept in an array so the manifest can record it verbatim.
 declare -a QE_CMAKE_ARGS=()
 
 configure_build() {
@@ -12,8 +11,8 @@ configure_build() {
     -S "$QE_SRC_DIR"
     -B "$QE_BUILD_DIR"
     -DCMAKE_BUILD_TYPE=Release
-    # Configure against the final location so that anything CMake bakes in is
-    # correct; the staging directory is only used for the atomic swap below.
+    # Configure against the final location so any path CMake bakes in is
+    # correct; the staging directory below is only for the atomic swap.
     -DCMAKE_INSTALL_PREFIX="$QE_PREFIX"
     -DCMAKE_C_COMPILER="$QE_MPICC_WRAPPER"
     -DCMAKE_Fortran_COMPILER="$QE_FC_WRAPPER"
@@ -22,14 +21,12 @@ configure_build() {
     -DQE_ENABLE_MPI=ON
     -DQE_ENABLE_OPENMP=ON
     -DQE_ENABLE_SCALAPACK=ON
-    # Intel10_64lp = MKL, 64-bit integers off (LP64), threaded. This makes
-    # CMake pick MKL for BLAS, LAPACK, ScaLAPACK/BLACS and the FFTW3 interface
-    # in one go, so QE links a single consistent numerical stack.
+    # Intel10_64lp = MKL, LP64, threaded. Covers BLAS, LAPACK,
+    # ScaLAPACK/BLACS and the FFTW3 interface in one go.
     -DBLA_VENDOR=Intel10_64lp
   )
 
-  # Reconfiguring on top of a cache built with different settings is a classic
-  # source of "it works on my machine": start clean whenever anything changed.
+  # A stale CMake cache would silently keep the previous settings.
   if [[ -f $QE_BUILD_DIR/CMakeCache.txt ]] && [[ $QE_FORCE == 1 ]]; then
     log_info "--force given: removing stale build directory"
     rm -rf "$QE_BUILD_DIR"
@@ -55,8 +52,7 @@ compile() {
 }
 
 # Install into a staging directory next to the final prefix, then swap it in
-# with a rename. An interrupted install therefore never leaves a half-written
-# tree where users' jobs would find it.
+# with a rename, so an interrupted install leaves no half-written tree.
 install_tree() {
   log_phase "Install"
 
@@ -76,8 +72,8 @@ install_tree() {
   log_ok "staged $(find "$staging/bin" -maxdepth 1 -type f | wc -l) executables in ${staging}"
 }
 
-# Called after postinstall has written the manifest/env/modulefile into the
-# staging tree, so the directory that appears at $QE_PREFIX is complete.
+# Runs after postinstall has filled the staging tree, so what appears at
+# $QE_PREFIX is complete.
 commit_install() {
   if [[ -d $QE_PREFIX ]]; then
     log_info "replacing existing installation at ${QE_PREFIX}"
